@@ -1,6 +1,8 @@
 package handlers
 
 import (
+	"fmt"
+
 	"github.com/SyedAliHamad/internproject/pkg/Models"
 	"github.com/SyedAliHamad/internproject/pkg/config"
 	"github.com/SyedAliHamad/internproject/pkg/render"
@@ -35,28 +37,37 @@ func NewHandlers(r *Repository){
 //Home: is the home page handler
 func (m* Repository)Home(w http.ResponseWriter, r* http.Request){
 
-	render.RenderTemplate(w,"home.page.tmpl",&Models.TemplateData{})
+	render.RenderTemplate(w,r,"home.page.tmpl",&Models.TemplateData{})
 }
 
 //About: is the About page handler
 func (m* Repository)Login(w http.ResponseWriter, r *http.Request){
 
-	render.RenderTemplate(w,"login.page.tmpl",&Models.TemplateData{
+	render.RenderTemplate(w,r,"login.page.tmpl",&Models.TemplateData{
 	})
 }
 
 func (m* Repository)View(w http.ResponseWriter, r *http.Request){
 
-	render.RenderTemplate(w,"view.page.tmpl",&Models.TemplateData{
+	render.RenderTemplate(w,r,"view.page.tmpl",&Models.TemplateData{
 	})
 }
+
+
+func (m* Repository)PostView(w http.ResponseWriter, r *http.Request){
+	
+	name :=r.Form.Get("login_name")
+	passwod:=r.Form.Get("login_password")
+	w.Write([]byte(fmt.Sprintf("login name: %s  password is %s",name,passwod)))
+}
+
 func (m* Repository)Contact(w http.ResponseWriter, r *http.Request){
 
-	render.RenderTemplate(w,"contact.page.tmpl",&Models.TemplateData{
+	render.RenderTemplate(w,r,"contact.page.tmpl",&Models.TemplateData{
 	})
 }
 func (m* Repository)Request(w http.ResponseWriter, r *http.Request){
 
-	render.RenderTemplate(w,"request.page.tmpl",&Models.TemplateData{
+	render.RenderTemplate(w,r,"request.page.tmpl",&Models.TemplateData{
 	})
 }

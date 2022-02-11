@@ -5,7 +5,6 @@ import (
 
 	"github.com/SyedAliHamad/internproject/pkg/config"
 	"github.com/SyedAliHamad/internproject/pkg/handlers"
-
 	"github.com/go-chi/chi"
 	"github.com/go-chi/chi/middleware"
 )
@@ -22,6 +21,7 @@ func routes(app *config.AppConfig)http.Handler{
 	mux.Get("/login",handlers.Repo.Login)
 	mux.Get("/contact",handlers.Repo.Contact)
 	mux.Get("/view",handlers.Repo.View)
+	mux.Post("/view",handlers.Repo.PostView)
 	mux.Get("/request",handlers.Repo.Request)
 
 	fileServer:= http.FileServer(http.Dir("./static/"))
