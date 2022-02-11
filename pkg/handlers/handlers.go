@@ -34,23 +34,29 @@ func NewHandlers(r *Repository){
 
 //Home: is the home page handler
 func (m* Repository)Home(w http.ResponseWriter, r* http.Request){
-	remoteIP := r.RemoteAddr
-
-	m.App.Session.Put(r.Context(),"remote_ip",remoteIP)
 
 	render.RenderTemplate(w,"home.page.tmpl",&Models.TemplateData{})
 }
 
 //About: is the About page handler
-func (m* Repository)About(w http.ResponseWriter, r *http.Request){
+func (m* Repository)Login(w http.ResponseWriter, r *http.Request){
 
-	stringMap :=make(map[string]string)
-	stringMap["test"]="hello,again."
+	render.RenderTemplate(w,"login.page.tmpl",&Models.TemplateData{
+	})
+}
 
-	remoteIP := m.App.Session.GetString(r.Context(),"remote_ip")
-	stringMap["remote_ip"]=remoteIP
+func (m* Repository)View(w http.ResponseWriter, r *http.Request){
 
-	render.RenderTemplate(w,"about.page.tmpl",&Models.TemplateData{
-		StringMap: stringMap,
+	render.RenderTemplate(w,"view.page.tmpl",&Models.TemplateData{
+	})
+}
+func (m* Repository)Contact(w http.ResponseWriter, r *http.Request){
+
+	render.RenderTemplate(w,"contact.page.tmpl",&Models.TemplateData{
+	})
+}
+func (m* Repository)Request(w http.ResponseWriter, r *http.Request){
+
+	render.RenderTemplate(w,"request.page.tmpl",&Models.TemplateData{
 	})
 }
