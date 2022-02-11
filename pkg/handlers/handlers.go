@@ -56,9 +56,14 @@ func (m* Repository)View(w http.ResponseWriter, r *http.Request){
 
 func (m* Repository)PostView(w http.ResponseWriter, r *http.Request){
 	
-	name :=r.Form.Get("login_name")
-	passwod:=r.Form.Get("login_password")
-	w.Write([]byte(fmt.Sprintf("login name: %s  password is %s",name,passwod)))
+	loginname :=r.Form.Get("login_name")
+	loginpasswod:=r.Form.Get("login_password")
+
+	signupname:= r.Form.Get("signup_name")
+	signupemail:=r.Form.Get("signup_email")
+	signuppassword:=r.Form.Get("signup_password")
+
+	w.Write([]byte(fmt.Sprintf("login name: %s      password is: %s       signup name is: %s        signup password : %s         signup password : %s",loginname,loginpasswod,signupname,signupemail,signuppassword)))
 }
 
 func (m* Repository)Contact(w http.ResponseWriter, r *http.Request){

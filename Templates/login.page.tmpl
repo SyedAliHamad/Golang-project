@@ -4,7 +4,7 @@
 
 <div class="maincont">
     <div class="container">
-        <form action="/view" method="post" class="form" id="login">
+        <form action="/view" method="post" class="form" id="loginf">
           <input type="hidden" name="csrf_token" value="{{.CSRFToken}}"> 
             <h1 class="form__title">Login</h1>
             <!--<div class="form__message form__message--error"></div>-->
@@ -25,6 +25,7 @@
 
 
         <form action="/view" method="post" class="form form--hidden" id="createAccount">
+        <input type="hidden" name="csrf_token" value="{{.CSRFToken}}">
             <h1 class="form__title">Create Account</h1>
             <!--<div class="form__message form__message--error"></div>-->
 
