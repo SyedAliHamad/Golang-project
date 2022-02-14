@@ -1,6 +1,8 @@
 package handlers
 
 import (
+	"log"
+
 	"github.com/SyedAliHamad/internproject/internal/forms"
 	"github.com/SyedAliHamad/internproject/pkg/Models"
 	"github.com/SyedAliHamad/internproject/pkg/config"
@@ -49,6 +51,35 @@ func (m* Repository)Login(w http.ResponseWriter, r *http.Request){
 
 //PostLogin: Handles the postin of the form
 func (m* Repository)PostLogin(w http.ResponseWriter, r *http.Request){
+
+	err := r.ParseForm()
+	if err!=nil{
+		log.Println(err)
+		return
+	}
+
+	login := Models.Loginform{
+
+		LoginEmail: r.Form.Get("login_email"),
+		LoginPassword: r.Form.Get("login_password"),
+	}
+
+
+	form :=forms.New(r.PostForm)
+	form.Has("login_email",r)
+
+	if !form.Valid(){
+	data:=make(map[string]interface{})
+	data["loginform"]=login
+
+	render.RenderTemplate(w,r,"login.page.tmpl",&Models.TemplateData{
+		Form: form,
+		Data: data,
+	})
+
+	return
+
+	}
 
 }
 
