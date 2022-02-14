@@ -1,8 +1,7 @@
 package handlers
 
 import (
-	"fmt"
-
+	"github.com/SyedAliHamad/internproject/internal/forms"
 	"github.com/SyedAliHamad/internproject/pkg/Models"
 	"github.com/SyedAliHamad/internproject/pkg/config"
 	"github.com/SyedAliHamad/internproject/pkg/render"
@@ -40,11 +39,17 @@ func (m* Repository)Home(w http.ResponseWriter, r* http.Request){
 	render.RenderTemplate(w,r,"home.page.tmpl",&Models.TemplateData{})
 }
 
-//About: is the About page handler
+//Login: is the About page handler
 func (m* Repository)Login(w http.ResponseWriter, r *http.Request){
 
 	render.RenderTemplate(w,r,"login.page.tmpl",&Models.TemplateData{
+		Form: forms.New(nil),
 	})
+}
+
+//PostLogin: Handles the postin of the form
+func (m* Repository)PostLogin(w http.ResponseWriter, r *http.Request){
+
 }
 
 func (m* Repository)View(w http.ResponseWriter, r *http.Request){
@@ -55,7 +60,7 @@ func (m* Repository)View(w http.ResponseWriter, r *http.Request){
 
 
 func (m* Repository)PostView(w http.ResponseWriter, r *http.Request){
-	
+	/*
 	loginname :=r.Form.Get("login_name")
 	loginpasswod:=r.Form.Get("login_password")
 
@@ -64,6 +69,7 @@ func (m* Repository)PostView(w http.ResponseWriter, r *http.Request){
 	signuppassword:=r.Form.Get("signup_password")
 
 	w.Write([]byte(fmt.Sprintf("login name: %s      password is: %s       signup name is: %s        signup password : %s         signup password : %s",loginname,loginpasswod,signupname,signupemail,signuppassword)))
+*/
 }
 
 func (m* Repository)Contact(w http.ResponseWriter, r *http.Request){
