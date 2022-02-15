@@ -44,8 +44,13 @@ func (m* Repository)Home(w http.ResponseWriter, r* http.Request){
 //Login: is the About page handler
 func (m* Repository)Login(w http.ResponseWriter, r *http.Request){
 
+	var emptylogin Models.Loginform
+	data:= make(map[string]interface{})
+	data["loginform"] = emptylogin
+
 	render.RenderTemplate(w,r,"login.page.tmpl",&Models.TemplateData{
 		Form: forms.New(nil),
+		Data: data,
 	})
 }
 

@@ -4,6 +4,8 @@
 
 <div class="maincont">
     <div class="container">
+
+      {{$log :=index .Data "loginform"}}
         <form action="/login" method="post" class="form" id="loginf">
           
           <input type="hidden" name="csrf_token" value="{{.CSRFToken}}"> 
@@ -14,12 +16,12 @@
             {{with .Form.Errors.Get "login_email"}}
             <label class="text-danger">{{.}}</label>
             {{end}}
-              <input type="text" class="form__input" autofocus placeholder="email" name="login_email">
+              <input type="text" value="{{$log.LoginEmail}}" class="form__input" autofocus placeholder="email" name="login_email">
               <div class="form__input-error-message"></div>
             </div>
 
             <div class="form__input-group">
-              <input type="password" class="form__input" autofocus placeholder="Password" name="login_password">
+              <input type="password" class="form__input" value="{{$log.LoginPassword}}" autofocus placeholder="Password" name="login_password">
               <div class="form__input-error-message"></div>
             </div>
 
