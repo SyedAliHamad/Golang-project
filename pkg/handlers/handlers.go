@@ -85,6 +85,7 @@ func (m* Repository)PostLogin(w http.ResponseWriter, r *http.Request){
 	//form.Has("login_email",r)
 	form.Required("login_email","login_password")
 	form.Minlength("login_password",8,r)
+	form.IsEmail("login_email")
 
 	if !form.Valid(){
 	data:=make(map[string]interface{})
