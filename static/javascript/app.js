@@ -17,21 +17,6 @@ function clearInputError(inputElement) {
     inputElement.parentElement.querySelector(".form__input-error-message").textContent = "";
 }*/
 
-document.addEventListener("DOMContentLoaded", () => {
-    var loginForm = document.querySelector("#loginf");
-    var createAccountForm = document.querySelector("#createAccount");
-
-    document.querySelector("#linkCreateAccount").addEventListener("click", e => {
-        e.preventDefault();
-        loginForm.classList.add("form--hidden");
-        createAccountForm.classList.remove("form--hidden");
-    });
-
-    document.querySelector("#linkLogin").addEventListener("click", e => {
-        e.preventDefault();
-        loginForm.classList.remove("form--hidden");
-        createAccountForm.classList.add("form--hidden");
-    });
 /*
     loginForm.addEventListener("submit", e => {
         e.preventDefault();
@@ -42,7 +27,6 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 */
 
-});
 const menu = document.querySelector('#mobile-menu');
 const menuLinks = document.querySelector('.navbar__menu');
 const navLogo = document.querySelector('#navbar__logo');

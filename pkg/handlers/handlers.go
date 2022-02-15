@@ -49,6 +49,17 @@ func (m* Repository)Login(w http.ResponseWriter, r *http.Request){
 	})
 }
 
+func (m* Repository)Signup(w http.ResponseWriter, r *http.Request){
+
+	render.RenderTemplate(w,r,"signup.page.tmpl",&Models.TemplateData{
+		Form: forms.New(nil),
+	})
+}
+
+func (m* Repository)PostSignup(w http.ResponseWriter, r *http.Request){
+
+
+}
 //PostLogin: Handles the postin of the form
 func (m* Repository)PostLogin(w http.ResponseWriter, r *http.Request){
 
