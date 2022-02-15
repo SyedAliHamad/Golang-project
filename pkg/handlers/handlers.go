@@ -82,7 +82,9 @@ func (m* Repository)PostLogin(w http.ResponseWriter, r *http.Request){
 
 
 	form :=forms.New(r.PostForm)
-	form.Has("login_email",r)
+	//form.Has("login_email",r)
+	form.Required("login_email","login_password")
+	form.Minlength("login_password",8,r)
 
 	if !form.Valid(){
 	data:=make(map[string]interface{})
@@ -92,11 +94,9 @@ func (m* Repository)PostLogin(w http.ResponseWriter, r *http.Request){
 		Form: form,
 		Data: data,
 	})
-
+	
 	return
-
 	}
-
 }
 
 func (m* Repository)View(w http.ResponseWriter, r *http.Request){

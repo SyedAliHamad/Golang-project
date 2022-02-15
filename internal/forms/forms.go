@@ -1,8 +1,10 @@
 package forms
 
 import (
+	"fmt"
 	"net/http"
 	"net/url"
+	"strings"
 )
 
 type Form struct{
@@ -22,11 +24,34 @@ func New(data url.Values) *Form{
 	}
 }
 
+//checks for required fields
+func (f *Form)Required(fields ...string){
+	for _,field :=range fields{
+		value :=f.Get(field)
+		if strings.TrimSpace(value)==""{
+			f.Errors.Add(field,"This field can not be blank")
+		}
+	}
+
+}
+
+//Has checksif form field is in p ost and not empty
 func (f *Form) Has(field string, r *http.Request) bool{
 	x:=r.Form.Get(field)
 	if x == "" {
-		f.Errors.Add(field,"This field can't be blank")
+		//f.Errors.Add(field,"This field can't be blank")
 		return false
 	}
 	return true
+}
+
+//Min length: checks for string min length
+func (f *Form) Minlength(field string,length int,r *http.Request)bool{
+	x:=r.Form.Get(field)
+	if len(x)<length{
+		f.Errors.Add(field,fmt.Sprintf("This field must be atleast %d charactes long",length))
+		return false
+	}
+	return true
+
 }
