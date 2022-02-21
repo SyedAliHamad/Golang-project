@@ -1,0 +1,10 @@
+mode: set
+github.com/SyedAliHamad/internproject/cmd/web/middleware.go:11.44,20.2 3 1
+github.com/SyedAliHamad/internproject/cmd/web/middleware.go:23.49,25.2 1 1
+github.com/SyedAliHamad/internproject/cmd/web/routes.go:12.47,36.2 16 1
+github.com/SyedAliHamad/internproject/cmd/web/main.go:19.12,22.13 2 0
+github.com/SyedAliHamad/internproject/cmd/web/main.go:26.2,34.16 4 0
+github.com/SyedAliHamad/internproject/cmd/web/main.go:22.13,24.3 1 0
+github.com/SyedAliHamad/internproject/cmd/web/main.go:37.17,51.13 9 1
+github.com/SyedAliHamad/internproject/cmd/web/main.go:56.2,64.12 6 1
+github.com/SyedAliHamad/internproject/cmd/web/main.go:51.13,54.3 2 0
