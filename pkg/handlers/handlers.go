@@ -1,8 +1,7 @@
 package handlers
 
 import (
-	"log"
-
+	"github.com/SyedAliHamad/internproject/helpers"
 	"github.com/SyedAliHamad/internproject/internal/forms"
 	"github.com/SyedAliHamad/internproject/pkg/Models"
 	"github.com/SyedAliHamad/internproject/pkg/config"
@@ -69,8 +68,9 @@ func (m* Repository)PostSignup(w http.ResponseWriter, r *http.Request){
 func (m* Repository)PostLogin(w http.ResponseWriter, r *http.Request){
 
 	err := r.ParseForm()
+	
 	if err!=nil{
-		log.Println(err)
+		helpers.ServerError(w,err)
 		return
 	}
 
