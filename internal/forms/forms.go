@@ -9,6 +9,7 @@ import (
 	"github.com/asaskevich/govalidator"
 )
 
+//Form createss a custom form struct, embeds a url.Values object
 type Form struct{
 	url.Values
 	Errors errors
@@ -36,6 +37,18 @@ func (f *Form)Required(fields ...string){
 	}
 }
 
+
+
+func (f *Form) University(field string,r *http.Request) bool{
+	x:=r.Form.Get(field)
+	if x=="Select"{
+		f.Errors.Add(field,"Please Select a University")
+		return false
+	}
+	return true
+}
+
+
 //Has checksif form field is in p ost and not empty
 func (f *Form) Has(field string, r *http.Request) bool{
 	x:=r.Form.Get(field)
@@ -44,6 +57,17 @@ func (f *Form) Has(field string, r *http.Request) bool{
 		return false
 	}
 	return true
+}
+func (f *Form) IsEqual(field1 string,field2 string, r *http.Request)bool{
+	x:=r.Form.Get(field1)
+	y:=r.Form.Get(field2)
+
+	if x!=y{
+		f.Errors.Add(field2,"Passwords Don't match")
+		return false
+	}
+	return true
+
 }
 
 //Min length: checks for string min length

@@ -5,6 +5,7 @@
 <div class="maincont">
     <div class="container">
 
+        {{$log :=index .Data "signupform"}}
         <form action="/signup" method="post" class="form" id="createAccount">
           
           <input type="hidden" name="csrf_token" value="{{.CSRFToken}}">
@@ -12,18 +13,35 @@
             <h1 class="form__title">Create Account</h1>
 
             <div class="form__input-group">
-              <input type="text" class="form__input" autofocus placeholder="Username" name="signup_name">
+
+              {{with .Form.Errors.Get "signup_name"}}
+                <label class="text-danger">{{.}}</label>
+              {{end}}
+
+              <input type="text" class="form__input" value="{{$log.Username}}" autofocus placeholder="Username" name="signup_name">
               <div class="form__input-error-message"></div>
             </div>
 
             <div class="form__input-group">
-              <input type="text" class="form__input"  autofocus placeholder="Email Address" name="signup_email">
+
+              {{with .Form.Errors.Get "signup_email"}}
+                <label class="text-danger">{{.}}</label>
+              {{end}}
+
+              <input type="text" class="form__input" value="{{$log.Email}}" autofocus placeholder="Email Address" name="signup_email">
               <div class="form__input-error-message"></div>
             </div>
 
 
 
             <div class="form__input-group">
+            
+
+              {{with .Form.Errors.Get "signup_university"}}
+                <label class="text-danger">{{.}}</label>
+              {{end}}
+
+
               <div class="form__input">
                       <label >University</label>
                       <select class="form-control select" name="signup_university">
@@ -38,12 +56,22 @@
 
 
             <div class="form__input-group">
-                  <input type="password" class="form__input" autofocus placeholder="Password" name="signup_password">
+
+              {{with .Form.Errors.Get "signup_password"}}
+                <label class="text-danger">{{.}}</label>
+              {{end}}
+
+                  <input type="password" class="form__input" value="{{$log.Password}}" autofocus placeholder="Password" name="signup_password">
                   <div class="form__input-error-message"></div>
             </div>
 
             <div class="form__input-group">
-              <input type="password" class="form__input" autofocus placeholder="Confirm password">
+
+              {{with .Form.Errors.Get "confirm_password"}}
+                <label class="text-danger">{{.}}</label>
+              {{end}}
+            
+              <input type="password" class="form__input" autofocus placeholder="Confirm password" name="confirm_password">
               <div class="form__input-error-message"></div>
             </div>
 

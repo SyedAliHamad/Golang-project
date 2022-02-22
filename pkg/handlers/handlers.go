@@ -62,6 +62,10 @@ func (m* Repository)Login(w http.ResponseWriter, r *http.Request){
 
 func (m* Repository)Signup(w http.ResponseWriter, r *http.Request){
 
+	var emptysignup Models.Student_info
+	data:= make(map[string]interface{})
+	data["signupform"] = emptysignup
+
 	render.Template(w,r,"signup.page.tmpl",&Models.TemplateData{
 		Form: forms.New(nil),
 	})
@@ -86,9 +90,12 @@ func (m* Repository)PostSignup(w http.ResponseWriter, r *http.Request){
 
 	}
 	form :=forms.New(r.PostForm)
-	form.Required("signup_name","signup_email","signup_university","signup_password")
+	form.Required("signup_name","signup_email","signup_password")
 	form.Minlength("signup_name",3,r)
+	form.Minlength("signup_password",8,r)
 	form.IsEmail("signup_email")
+	form.IsEqual("signup_password","confirm_password",r)
+	form.University("signup_university",r)
 
 	if !form.Valid(){
 		data:=make(map[string]interface{})
@@ -106,6 +113,8 @@ func (m* Repository)PostSignup(w http.ResponseWriter, r *http.Request){
 		helpers.ServerError(w,err)
 	} 
 }
+
+
 //PostLogin: Handles the postin of the form
 func (m* Repository)PostLogin(w http.ResponseWriter, r *http.Request){
 
