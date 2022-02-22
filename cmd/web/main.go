@@ -8,6 +8,7 @@ import (
 	"time"
 
 	"github.com/SyedAliHamad/internproject/helpers"
+	"github.com/SyedAliHamad/internproject/internal/driver"
 	"github.com/SyedAliHamad/internproject/pkg/config"
 	"github.com/SyedAliHamad/internproject/pkg/handlers"
 	"github.com/SyedAliHamad/internproject/pkg/render"
@@ -22,10 +23,11 @@ var errorLog *log.Logger
 
 func main(){
 
-	err:=run()
+	db,err:=run()
 	if err!=nil{
 		log.Fatal(err)
 	}
+	defer db.SQL.Close()     //connection won't be closed until main is stopped
 
 	fmt.Println((fmt.Printf("Starting application on port %s ", portNumber)))
 
@@ -38,7 +40,7 @@ func main(){
 	log.Fatal(err)
 }
 
-func run() error{
+func run() (*driver.DB,error){
 	
 	//change this to true when in production=> state for cookie
 	app.InProduction=false
@@ -60,21 +62,32 @@ func run() error{
 
 	app.Session=session
 
+	//connnect to database
+
+		log.Println("connecting to database")
+		db,err:=driver.ConnectSQL("host=localhost port=5432 dbname=exams user=ali password=ali")
+		if err!=nil{
+			log.Fatal("cannot connect to database! dying ...")
+		}
+		log.Println("Connected to database")
+
 	tc,err :=render.CreateTemplateCashe()
 	if err!=nil{
 		log.Fatal("cannot create template cache")
-		return err
+		return nil,err
 	}
 
 	app.TemplateCache=tc
 	app.UseCache=false
 
-	repo:=handlers.NewRepo(&app)
+	repo:=handlers.NewRepo(&app,db) 
+	//we have application config avaliable to handlers along 
+	//with db which is a pointer to a driver which can only 
+	//handle postgres but can be changed to any driver with a new function
+
 	handlers.NewHandlers(repo)
-
 	render.NewTemplates(&app)
-
 	helpers.NewHelpers(&app)
 
-	return nil
+	return db,nil
 }

@@ -2,7 +2,10 @@ package handlers
 
 import (
 	"github.com/SyedAliHamad/internproject/helpers"
+	"github.com/SyedAliHamad/internproject/internal/driver"
 	"github.com/SyedAliHamad/internproject/internal/forms"
+	"github.com/SyedAliHamad/internproject/internal/repository"
+	"github.com/SyedAliHamad/internproject/internal/repository/dbrepo"
 	"github.com/SyedAliHamad/internproject/pkg/Models"
 	"github.com/SyedAliHamad/internproject/pkg/config"
 	"github.com/SyedAliHamad/internproject/pkg/render"
@@ -17,13 +20,15 @@ var Repo *Repository
 //Repository: creates a new repository
 type Repository struct{
 	App *config.AppConfig
+	DB repository.DatabaseRepo
 }
 
 
 //NewRepo: creates a new repository
-func NewRepo(a *config.AppConfig) *Repository{
+func NewRepo(a *config.AppConfig, db *driver.DB) *Repository{
 	return &Repository{
 		App:a,
+		DB: dbrepo.NewPostgresRepo(db.SQL,a),
 	}
 }
 
