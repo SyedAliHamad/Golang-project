@@ -34,7 +34,6 @@ func (f *Form)Required(fields ...string){
 			f.Errors.Add(field,"This field can not be blank")
 		}
 	}
-
 }
 
 //Has checksif form field is in p ost and not empty

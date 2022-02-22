@@ -1,6 +1,8 @@
 package handlers
 
 import (
+	"time"
+
 	"github.com/SyedAliHamad/internproject/helpers"
 	"github.com/SyedAliHamad/internproject/internal/driver"
 	"github.com/SyedAliHamad/internproject/internal/forms"
@@ -42,7 +44,7 @@ func NewHandlers(r *Repository){
 //Home: is the home page handler
 func (m* Repository)Home(w http.ResponseWriter, r* http.Request){
 
-	render.RenderTemplate(w,r,"home.page.tmpl",&Models.TemplateData{})
+	render.Template(w,r,"home.page.tmpl",&Models.TemplateData{})
 }
 
 //Login: is the About page handler
@@ -52,7 +54,7 @@ func (m* Repository)Login(w http.ResponseWriter, r *http.Request){
 	data:= make(map[string]interface{})
 	data["loginform"] = emptylogin
 
-	render.RenderTemplate(w,r,"login.page.tmpl",&Models.TemplateData{
+	render.Template(w,r,"login.page.tmpl",&Models.TemplateData{
 		Form: forms.New(nil),
 		Data: data,
 	})
@@ -60,20 +62,54 @@ func (m* Repository)Login(w http.ResponseWriter, r *http.Request){
 
 func (m* Repository)Signup(w http.ResponseWriter, r *http.Request){
 
-	render.RenderTemplate(w,r,"signup.page.tmpl",&Models.TemplateData{
+	render.Template(w,r,"signup.page.tmpl",&Models.TemplateData{
 		Form: forms.New(nil),
 	})
 }
 
 func (m* Repository)PostSignup(w http.ResponseWriter, r *http.Request){
 
+	err := r.ParseForm()
+	if err!=nil{
+		helpers.ServerError(w,err)
+		return
+	}
 
+	signup:=Models.Student_info{
+		Username :r.Form.Get("signup_name"),
+		Email :r.Form.Get("signup_email"),
+		University :r.Form.Get("signup_university"),
+		Password :r.Form.Get("signup_password"),
+		Created : time.Now(),
+		Status :false,
+		Hash :"not set rn",
+
+	}
+	form :=forms.New(r.PostForm)
+	form.Required("signup_name","signup_email","signup_university","signup_password")
+	form.Minlength("signup_name",3,r)
+	form.IsEmail("signup_email")
+
+	if !form.Valid(){
+		data:=make(map[string]interface{})
+		data["signupform"]=signup
+		render.Template(w,r,"signup.page.tmpl",&Models.TemplateData{
+			Form: form,
+			Data: data,
+		})
+
+		return
+	} 
+	
+	err =m.DB.InsertStudentinfo(signup)
+	if err !=nil{
+		helpers.ServerError(w,err)
+	} 
 }
 //PostLogin: Handles the postin of the form
 func (m* Repository)PostLogin(w http.ResponseWriter, r *http.Request){
 
 	err := r.ParseForm()
-	
 	if err!=nil{
 		helpers.ServerError(w,err)
 		return
@@ -93,13 +129,13 @@ func (m* Repository)PostLogin(w http.ResponseWriter, r *http.Request){
 	form.IsEmail("login_email")
 
 	if !form.Valid(){
-	data:=make(map[string]interface{})
-	data["loginform"]=login
+		data:=make(map[string]interface{})
+		data["loginform"]=login
 
-	render.RenderTemplate(w,r,"login.page.tmpl",&Models.TemplateData{
-		Form: form,
-		Data: data,
-	})
+		render.Template(w,r,"login.page.tmpl",&Models.TemplateData{
+			Form: form,
+			Data: data,
+		})
 	
 	return
 	}
@@ -107,7 +143,7 @@ func (m* Repository)PostLogin(w http.ResponseWriter, r *http.Request){
 
 func (m* Repository)View(w http.ResponseWriter, r *http.Request){
 
-	render.RenderTemplate(w,r,"view.page.tmpl",&Models.TemplateData{
+	render.Template(w,r,"view.page.tmpl",&Models.TemplateData{
 	})
 }
 
@@ -127,11 +163,11 @@ func (m* Repository)PostView(w http.ResponseWriter, r *http.Request){
 
 func (m* Repository)Contact(w http.ResponseWriter, r *http.Request){
 
-	render.RenderTemplate(w,r,"contact.page.tmpl",&Models.TemplateData{
+	render.Template(w,r,"contact.page.tmpl",&Models.TemplateData{
 	})
 }
 func (m* Repository)Request(w http.ResponseWriter, r *http.Request){
 
-	render.RenderTemplate(w,r,"request.page.tmpl",&Models.TemplateData{
+	render.Template(w,r,"request.page.tmpl",&Models.TemplateData{
 	})
 }

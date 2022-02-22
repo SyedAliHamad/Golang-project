@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"html/template"
 	"log"
-	"net/http" 
+	"net/http"
 	"path/filepath"
 
 	"github.com/SyedAliHamad/internproject/pkg/Models"
@@ -16,7 +16,7 @@ import (
 
 var app *config.AppConfig
 //sets the config fot the templates package
-func NewTemplates(a *config.AppConfig){
+func NewRenderer(a *config.AppConfig){
 	app=a
 }
 
@@ -28,7 +28,7 @@ func AddDefaultData(td *Models.TemplateData,r *http.Request)*Models.TemplateData
 }
 
 //Render Template renders templates using hml/templates
-func RenderTemplate(w http.ResponseWriter,r *http.Request, tmpl string,td *Models.TemplateData) {
+func Template(w http.ResponseWriter,r *http.Request, tmpl string,td *Models.TemplateData) {
 	
 	var tc map[string]* template.Template
 	

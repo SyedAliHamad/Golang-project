@@ -86,7 +86,7 @@ func run() (*driver.DB,error){
 	//handle postgres but can be changed to any driver with a new function
 
 	handlers.NewHandlers(repo)
-	render.NewTemplates(&app)
+	render.NewRenderer(&app)
 	helpers.NewHelpers(&app)
 
 	return db,nil
