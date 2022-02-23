@@ -19,40 +19,42 @@ type Student_info struct{
 	Created time.Time
 	Status bool
 	Hash string
+	Dropuni []string
 }
 
 //Data is the data table from the database
 type Data struct{
-	exam_id int
-	course_name string
-	department string
-	campus string
-	year time.Time
-	semester string
-	path_pdf string
+	Exam_id int
+	Course_name string
+	Department string
+	Campus string
+	Year time.Time
+	Semester string
+	Path_pdf string
 }
 
 
 //contact is the contact table from the database
-type contact struct{
-	message_id int
-	email string
-	username string
-	message string
+type Contact struct{
+	Message_id int
+	Username string
+	Email string
+	University string
+	Message string
 }
 
 //admin is the admin table from the database
-type admin struct{
-	username string
-	password string
-	email string
-	excesslevel int
+type Admin struct{
+	Username string
+	Password string
+	Email string
+	Excesslevel int
 }
 
 //req_course is the req_course table from the database
-type req_course struct{
-	request_id int
-	email string
-	university_name string
-	course string
+type Req_course struct{
+	Request_id int
+	Email string
+	University_name string
+	Course string
 }

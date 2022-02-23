@@ -18,6 +18,7 @@ func routes(app *config.AppConfig)http.Handler{
 	mux.Use(SessionLoad)
 
 	mux.Get("/",handlers.Repo.Home)
+
 	mux.Get("/login",handlers.Repo.Login)
 	mux.Post("/login",handlers.Repo.PostLogin)
 
@@ -25,8 +26,14 @@ func routes(app *config.AppConfig)http.Handler{
 	mux.Post("/signup",handlers.Repo.PostSignup)
 
 	mux.Get("/contact",handlers.Repo.Contact)
+	mux.Post("/contact",handlers.Repo.PostContact)
+
 	mux.Get("/view",handlers.Repo.View)
 	mux.Post("/view",handlers.Repo.PostView)
+
+	mux.Get("/upload",handlers.Repo.Upload)
+	mux.Post("/upload",handlers.Repo.PostUpload)
+
 	mux.Get("/request",handlers.Repo.Request)
 
 	fileServer:= http.FileServer(http.Dir("./static/"))

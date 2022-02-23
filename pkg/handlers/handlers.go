@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"log"
 	"time"
 
 	"github.com/SyedAliHamad/internproject/helpers"
@@ -60,59 +61,6 @@ func (m* Repository)Login(w http.ResponseWriter, r *http.Request){
 	})
 }
 
-func (m* Repository)Signup(w http.ResponseWriter, r *http.Request){
-
-	var emptysignup Models.Student_info
-	data:= make(map[string]interface{})
-	data["signupform"] = emptysignup
-
-	render.Template(w,r,"signup.page.tmpl",&Models.TemplateData{
-		Form: forms.New(nil),
-	})
-}
-
-func (m* Repository)PostSignup(w http.ResponseWriter, r *http.Request){
-
-	err := r.ParseForm()
-	if err!=nil{
-		helpers.ServerError(w,err)
-		return
-	}
-
-	signup:=Models.Student_info{
-		Username :r.Form.Get("signup_name"),
-		Email :r.Form.Get("signup_email"),
-		University :r.Form.Get("signup_university"),
-		Password :r.Form.Get("signup_password"),
-		Created : time.Now(),
-		Status :false,
-		Hash :"not set rn",
-
-	}
-	form :=forms.New(r.PostForm)
-	form.Required("signup_name","signup_email","signup_password")
-	form.Minlength("signup_name",3,r)
-	form.Minlength("signup_password",8,r)
-	form.IsEmail("signup_email")
-	form.IsEqual("signup_password","confirm_password",r)
-	form.University("signup_university",r)
-
-	if !form.Valid(){
-		data:=make(map[string]interface{})
-		data["signupform"]=signup
-		render.Template(w,r,"signup.page.tmpl",&Models.TemplateData{
-			Form: form,
-			Data: data,
-		})
-
-		return
-	} 
-	
-	err =m.DB.InsertStudentinfo(signup)
-	if err !=nil{
-		helpers.ServerError(w,err)
-	} 
-}
 
 
 //PostLogin: Handles the postin of the form
@@ -149,10 +97,97 @@ func (m* Repository)PostLogin(w http.ResponseWriter, r *http.Request){
 	return
 	}
 }
+var dropuniversities[]string
+
+func (m* Repository)Signup(w http.ResponseWriter, r *http.Request){
+
+	dropuni,err :=m.DB.Getuniversities()
+	if err !=nil{
+		helpers.ServerError(w,err)
+	} 
+
+	for i:=0;i<2;i++{
+		log.Println(dropuni[i])
+	}
+	dropuniversities=dropuni
+	
+	emptysignup:= Models.Student_info{
+		Dropuni: dropuni,
+	}
+
+	data:= make(map[string]interface{})
+	data["signupform"] = emptysignup
+	
+
+	render.Template(w,r,"signup.page.tmpl",&Models.TemplateData{
+		Form: forms.New(nil),
+		Data: data,
+	})
+	
+}
+
+func (m* Repository)PostSignup(w http.ResponseWriter, r *http.Request){
+
+	err := r.ParseForm()
+	if err!=nil{
+		helpers.ServerError(w,err)
+		return
+	}
+	
+
+	signup:=Models.Student_info{
+		Username :r.Form.Get("signup_name"),
+		Email :r.Form.Get("signup_email"),
+		University :r.Form.Get("signup_university"),
+		Password :r.Form.Get("signup_password"),
+		Created : time.Now(),
+		Status :false,
+		Hash :"not set rn",
+		Dropuni: dropuniversities,
+
+	}
+
+	form :=forms.New(r.PostForm)
+	form.Required("signup_name","signup_email","signup_password")
+	form.Minlength("signup_name",3,r)
+	form.Minlength("signup_password",8,r)
+	form.IsEmail("signup_email")
+	form.IsEqual("signup_password","confirm_password",r)
+	form.University("signup_university",r)
+
+	if !form.Valid(){
+		data:=make(map[string]interface{})
+		data["signupform"]=signup
+		render.Template(w,r,"signup.page.tmpl",&Models.TemplateData{
+			Form: form,
+			Data: data,
+		})
+
+		return
+	} 
+	
+	err =m.DB.InsertStudentinfo(signup)
+	if err !=nil{
+		helpers.ServerError(w,err)
+	} 
+}
+
+
 
 func (m* Repository)View(w http.ResponseWriter, r *http.Request){
 
 	render.Template(w,r,"view.page.tmpl",&Models.TemplateData{
+	})
+}
+func (m* Repository)Upload(w http.ResponseWriter, r *http.Request){
+
+	render.Template(w,r,"upload.page.tmpl",&Models.TemplateData{
+	})
+}
+
+func (m* Repository)PostUpload(w http.ResponseWriter, r *http.Request){
+
+	render.Template(w,r,"upload.page.tmpl",&Models.TemplateData{
 	})
 }
 
@@ -172,9 +207,56 @@ func (m* Repository)PostView(w http.ResponseWriter, r *http.Request){
 
 func (m* Repository)Contact(w http.ResponseWriter, r *http.Request){
 
+	var emptycontact Models.Contact
+	data:=make(map[string]interface{})
+	data["contactform"]=emptycontact
+
 	render.Template(w,r,"contact.page.tmpl",&Models.TemplateData{
+		Form: forms.New(nil),
 	})
 }
+
+func (m *Repository)PostContact(w http.ResponseWriter, r*http.Request){
+
+	err := r.ParseForm()
+	if err!=nil{
+		helpers.ServerError(w,err)
+		return
+	}
+
+	contact:=Models.Contact{
+		Email: r.Form.Get("Email"),
+		Username:r.Form.Get("name"),
+		University: r.Form.Get("University"),
+		Message:r.Form.Get("Message"),
+	}
+
+	log.Println(contact.Email,contact.Username,contact.Message)
+
+
+	form:=forms.New(r.PostForm)
+	form.Required("name","Message","Email","University")
+	form.IsEmail("Email")
+	form.Minlength("name",3,r)
+	form.Minlength("Message",20,r)
+
+	if!form.Valid(){
+		data:=make(map[string]interface{})
+		data["contactform"]=contact
+		render.Template(w,r,"contact.page.tmpl",&Models.TemplateData{
+			Form :form,
+			Data:data,
+		})
+		return
+	}
+
+	err =m.DB.InsertContact(contact)
+	if err !=nil{
+		helpers.ServerError(w,err)
+	} 
+
+}
+
 func (m* Repository)Request(w http.ResponseWriter, r *http.Request){
 
 	render.Template(w,r,"request.page.tmpl",&Models.TemplateData{

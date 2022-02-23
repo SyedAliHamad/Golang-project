@@ -15,7 +15,7 @@
             <div class="form__input-group">
 
               {{with .Form.Errors.Get "signup_name"}}
-                <label class="text-danger">{{.}}</label>
+                <label class="label-input100"style="color:red">{{.}}</label>
               {{end}}
 
               <input type="text" class="form__input" value="{{$log.Username}}" autofocus placeholder="Username" name="signup_name">
@@ -25,7 +25,7 @@
             <div class="form__input-group">
 
               {{with .Form.Errors.Get "signup_email"}}
-                <label class="text-danger">{{.}}</label>
+                <label class="label-input100"style="color:red">{{.}}</label>
               {{end}}
 
               <input type="text" class="form__input" value="{{$log.Email}}" autofocus placeholder="Email Address" name="signup_email">
@@ -38,7 +38,7 @@
             
 
               {{with .Form.Errors.Get "signup_university"}}
-                <label class="text-danger">{{.}}</label>
+                <label class="label-input100"style="color:red">{{.}}</label>
               {{end}}
 
 
@@ -46,8 +46,7 @@
                       <label >University</label>
                       <select class="form-control select" name="signup_university">
                         <option>Select</option> 
-                        <option>FAST-NUCES</option> 
-                        <option>NUST</option> 
+                        {{range $log.Dropuni}}<option>{{.}}</option>{{end}} 
                       </select>
                   <div class="form__input-error-message"></div>
               </div>
@@ -58,7 +57,7 @@
             <div class="form__input-group">
 
               {{with .Form.Errors.Get "signup_password"}}
-                <label class="text-danger">{{.}}</label>
+                <label class="label-input100"style="color:red">{{.}}</label>
               {{end}}
 
                   <input type="password" class="form__input" value="{{$log.Password}}" autofocus placeholder="Password" name="signup_password">
@@ -68,7 +67,7 @@
             <div class="form__input-group">
 
               {{with .Form.Errors.Get "confirm_password"}}
-                <label class="text-danger">{{.}}</label>
+                <label class="label-input100"style="color:red">{{.}}</label>
               {{end}}
             
               <input type="password" class="form__input" autofocus placeholder="Confirm password" name="confirm_password">
@@ -83,7 +82,5 @@
         </form>
     </div>
 </div>
-
-
 
 {{end}}

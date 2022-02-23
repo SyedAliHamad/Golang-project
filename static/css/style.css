@@ -551,7 +551,7 @@
   align-items: center;
   justify-content: center;
   font-size: 18px;
-  background-image: url('../images/search-background.jpg');
+  background-color:#c9d6ff; 
   background-size: cover;
   background-repeat: no-repeat;
   background-attachment: fixed;
