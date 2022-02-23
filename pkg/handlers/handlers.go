@@ -98,21 +98,34 @@ func (m* Repository)PostLogin(w http.ResponseWriter, r *http.Request){
 	}
 }
 var dropuniversities[]string
+var dropcourse[]string
+var dropdept[]string
+
+func (m* Repository)filldata(w *http.ResponseWriter){
+	dropuni,err :=m.DB.Getuniversities()
+	if err !=nil{
+		helpers.ServerError(*w,err)
+	} 
+	
+	dropuniversities=dropuni	
+
+	dropc,err:=m.DB.GetCourses()
+	if err !=nil{
+		helpers.ServerError(*w,err)
+	} 
+	dropcourse=dropc
+
+	dropd,err:=m.DB.Getdepartment()
+	if err !=nil{
+		helpers.ServerError(*w,err)
+	} 
+	dropdept=dropd
+}
 
 func (m* Repository)Signup(w http.ResponseWriter, r *http.Request){
 
-	dropuni,err :=m.DB.Getuniversities()
-	if err !=nil{
-		helpers.ServerError(w,err)
-	} 
-
-	for i:=0;i<2;i++{
-		log.Println(dropuni[i])
-	}
-	dropuniversities=dropuni
-	
+	m.filldata(&w)
 	emptysignup:= Models.Student_info{
-		Dropuni: dropuni,
 	}
 
 	data:= make(map[string]interface{})
@@ -122,6 +135,7 @@ func (m* Repository)Signup(w http.ResponseWriter, r *http.Request){
 	render.Template(w,r,"signup.page.tmpl",&Models.TemplateData{
 		Form: forms.New(nil),
 		Data: data,
+		Dropuni: dropuniversities,
 	})
 	
 }
@@ -143,7 +157,7 @@ func (m* Repository)PostSignup(w http.ResponseWriter, r *http.Request){
 		Created : time.Now(),
 		Status :false,
 		Hash :"not set rn",
-		Dropuni: dropuniversities,
+		//Dropuni: dropuniversities,
 
 	}
 
@@ -161,6 +175,7 @@ func (m* Repository)PostSignup(w http.ResponseWriter, r *http.Request){
 		render.Template(w,r,"signup.page.tmpl",&Models.TemplateData{
 			Form: form,
 			Data: data,
+			Dropuni: dropuniversities,
 		})
 
 		return
@@ -177,6 +192,9 @@ func (m* Repository)PostSignup(w http.ResponseWriter, r *http.Request){
 func (m* Repository)View(w http.ResponseWriter, r *http.Request){
 
 	render.Template(w,r,"view.page.tmpl",&Models.TemplateData{
+		Dropuni: dropuniversities,
+		DropCourse: dropcourse,
+		DropDept: dropdept,
 	})
 }
 func (m* Repository)Upload(w http.ResponseWriter, r *http.Request){

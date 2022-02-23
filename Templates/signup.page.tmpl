@@ -36,20 +36,19 @@
 
             <div class="form__input-group">
             
-
               {{with .Form.Errors.Get "signup_university"}}
                 <label class="label-input100"style="color:red">{{.}}</label>
               {{end}}
-
 
               <div class="form__input">
                       <label >University</label>
                       <select class="form-control select" name="signup_university">
                         <option>Select</option> 
-                        {{range $log.Dropuni}}<option>{{.}}</option>{{end}} 
+                        {{range .Dropuni}}<option>{{.}}</option>{{end}} 
                       </select>
                   <div class="form__input-error-message"></div>
               </div>
+
             </div>
 
 

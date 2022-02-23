@@ -173,13 +173,14 @@ iframe {
   justify-content: center;
   align-items: center;
   padding: 15px;
-  background: #e6e6e6;
+  background: #c9d6ff; 
+  ;
   
 }
 
 .wrap-contact100 {
   width: 920px;
-  background:rgba(205, 208, 209, 0.867);
+  background: #6b90a1;
   border-radius: 10px;
   overflow: hidden;
   padding: 62px 55px 90px 55px;

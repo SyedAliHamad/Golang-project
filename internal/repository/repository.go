@@ -7,4 +7,6 @@ type DatabaseRepo interface{
 	InsertStudentinfo(log Models.Student_info)error
 	InsertContact(log Models.Contact)error
 	Getuniversities()([]string,error)
+	GetCourses()([]string,error)
+	Getdepartment()([]string,error)
 }

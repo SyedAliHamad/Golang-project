@@ -12,7 +12,57 @@ import (
 func(m *postgresDBrepo)Allusers()bool{
 	return true
 }
+func(m*postgresDBrepo) Getdepartment() ([]string,error) {
 
+	rows,err:=m.DB.Query("select dep_name from department;")
+	if err!=nil{
+		log.Println(err)
+		return nil,err
+	}
+	defer rows.Close()
+	var name string
+	var dropdept []string
+	for rows.Next(){
+		err:=rows.Scan(&name)
+		if err!=nil{
+			log.Println(err)
+			return nil,err
+		}
+		dropdept=append(dropdept, name)
+	
+	}
+	if err=rows.Err(); err !=nil{
+		log.Fatal("error scanning rows",err)
+	}
+	fmt.Println("------------------------------")
+	return dropdept,err
+
+}
+
+func (m*postgresDBrepo) GetCourses()([]string,error){
+	rows,err:=m.DB.Query("select coursename from course")
+	if err!=nil{
+		log.Println(err)
+		return nil,err
+	}
+	defer rows.Close()
+	var name string
+	var dropcourse []string
+	for rows.Next(){
+		err:=rows.Scan(&name)
+		if err!=nil{
+			log.Println(err)
+			return nil,err
+		}
+		dropcourse=append(dropcourse, name)
+	
+	}
+	if err=rows.Err(); err !=nil{
+		log.Fatal("error scanning rows",err)
+	}
+	fmt.Println("------------------------------")
+	return dropcourse,err
+}
 
 func (m*postgresDBrepo) Getuniversities() ([]string,error){
 
@@ -21,7 +71,6 @@ func (m*postgresDBrepo) Getuniversities() ([]string,error){
 		log.Println(err)
 		return nil,err
 	}
-	count:=0
 	defer rows.Close()
 	var name string
 	var dropuni []string
@@ -34,7 +83,6 @@ func (m*postgresDBrepo) Getuniversities() ([]string,error){
 		}
 		//fmt.Println("Record is",name)
 		dropuni=append(dropuni, name)
-		count++
 	}
 	if err=rows.Err(); err !=nil{
 		log.Fatal("error scanning rows",err)

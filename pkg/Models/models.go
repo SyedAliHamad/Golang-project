@@ -19,7 +19,7 @@ type Student_info struct{
 	Created time.Time
 	Status bool
 	Hash string
-	Dropuni []string
+	//Dropuni []string
 }
 
 //Data is the data table from the database
