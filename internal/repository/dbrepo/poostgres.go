@@ -2,10 +2,12 @@ package dbrepo
 
 import (
 	"context"
+	"errors"
 	"log"
 	"time"
 
 	"github.com/SyedAliHamad/internproject/pkg/Models"
+	"golang.org/x/crypto/bcrypt"
 )
 
 func(m *postgresDBrepo)Allusers()bool{
@@ -39,7 +41,7 @@ func(m*postgresDBrepo) Getdepartment() ([]string,error) {
 }
 
 func (m*postgresDBrepo) GetCourses()([]string,error){
-	rows,err:=m.DB.Query("select coursename from course")
+	rows,err:=m.DB.Query("select coursename from course;")
 	if err!=nil{
 		log.Println(err)
 		return nil,err
@@ -64,7 +66,7 @@ func (m*postgresDBrepo) GetCourses()([]string,error){
 
 func (m*postgresDBrepo) Getuniversities() ([]string,error){
 
-	rows,err:=m.DB.Query("select university_name from university")
+	rows,err:=m.DB.Query("select university_name from university;")
 	if err!=nil{
 		log.Println(err)
 		return nil,err
@@ -115,13 +117,44 @@ func (m *postgresDBrepo) InsertStudentinfo(reg Models.Student_info) error{
 		return err
 	}
 	return nil
+
+}
+
+//returns student by email
+func(m* postgresDBrepo) GetStudent(email string)(Models.Student_info,error){
+
+	ctx,cancel:=context.WithTimeout(context.Background(),50*time.Second)
+	defer cancel()
+
+	stmt:= `select username,email,university,password,created,status,hash
+	from student_info where email= $1;`
+
+	row:=m.DB.QueryRowContext(ctx,stmt,email)
+
+	var u Models.Student_info
+
+	err:=row.Scan(
+		&u.Username,
+		&u.Email,
+		&u.University,
+		&u.Password,
+		&u.Created,
+		&u.Status,
+		&u.Hash,
+	)
+	if err!=nil{
+		return u,err
+	}
+	return u,nil
+
+
 }
 
 func (m *postgresDBrepo) InsertContact(reg Models.Contact)error{
 	ctx,cancel:=context.WithTimeout(context.Background(),10*time.Minute)
 	defer cancel()
 
-		stmt := `insert into contact
+	stmt := `insert into contact
 	(username,email,university,message) 
 	values
 	($1,$2,$3,$4);`
@@ -132,6 +165,7 @@ func (m *postgresDBrepo) InsertContact(reg Models.Contact)error{
 		reg.University,
 		reg.Message,
 	)
+
 
 	if err!=nil{
 		return err
@@ -159,4 +193,31 @@ func (m *postgresDBrepo) InsertRequest(req Models.Req_course)error{
 		return err
 	}
 	return nil
+}
+
+//Authenticate: Authenticates a user
+func (m*postgresDBrepo) Authenticate(email,testPassword string)(int,string,error){
+	ctx,cancel:=context.WithTimeout(context.Background(),10*time.Minute)
+	defer cancel()
+
+
+	var id int
+	var hashedPassword string
+
+	row:=m.DB.QueryRowContext(ctx,"select student_id ,password from student_info where email=$1;",email)
+	err:=row.Scan(&id,&hashedPassword)
+	if err!=nil{
+		return id,"",err
+	}
+
+	err=bcrypt.CompareHashAndPassword([]byte(hashedPassword),[]byte(testPassword))
+	
+	if err==bcrypt.ErrMismatchedHashAndPassword{
+		return 0,"",errors.New("Incorrect password")
+	}else if err!=nil{
+		return 0,"",err
+	}
+
+	return id,hashedPassword,nil
+
 }

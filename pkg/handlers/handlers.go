@@ -51,13 +51,9 @@ func (m* Repository)Home(w http.ResponseWriter, r* http.Request){
 //Login: is the About page handler
 func (m* Repository)Login(w http.ResponseWriter, r *http.Request){
 
-	var emptylogin Models.Loginform
-	data:= make(map[string]interface{})
-	data["loginform"] = emptylogin
 
 	render.Template(w,r,"login.page.tmpl",&Models.TemplateData{
 		Form: forms.New(nil),
-		Data: data,
 	})
 }
 
@@ -65,6 +61,8 @@ func (m* Repository)Login(w http.ResponseWriter, r *http.Request){
 
 //PostLogin: Handles the postin of the form
 func (m* Repository)PostLogin(w http.ResponseWriter, r *http.Request){
+
+	_=m.App.Session.RenewToken(r.Context())
 
 	err := r.ParseForm()
 	if err!=nil{
@@ -80,22 +78,31 @@ func (m* Repository)PostLogin(w http.ResponseWriter, r *http.Request){
 
 
 	form :=forms.New(r.PostForm)
-	//form.Has("login_email",r)
+
 	form.Required("login_email","login_password")
 	form.Minlength("login_password",8,r)
 	form.IsEmail("login_email")
 
 	if !form.Valid(){
-		data:=make(map[string]interface{})
-		data["loginform"]=login
 
 		render.Template(w,r,"login.page.tmpl",&Models.TemplateData{
 			Form: form,
-			Data: data,
 		})
 	
 	return
 	}
+
+	id,_,err:=m.DB.Authenticate(login.LoginEmail,login.LoginPassword)
+	if err!=nil{
+		log.Println(err)
+		m.App.Session.Put(r.Context(),"error","Invalid login credentials")
+		http.Redirect(w,r,"/login",http.StatusSeeOther)
+		return
+	}
+	m.App.Session.Put(r.Context(),"user_id",id)
+	m.App.Session.Put(r.Context(),"flash","Logged in successfully")
+	http.Redirect(w,r,"/view",http.StatusSeeOther)
+
 }
 var dropuniversities[]string
 var dropcourse[]string

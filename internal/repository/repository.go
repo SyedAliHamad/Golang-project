@@ -10,4 +10,6 @@ type DatabaseRepo interface{
 	Getuniversities()([]string,error)
 	GetCourses()([]string,error)
 	Getdepartment()([]string,error)
+	GetStudent(string)(Models.Student_info,error)
+	Authenticate(email,testPassword string)(int,string,error)
 }
