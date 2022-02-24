@@ -3,7 +3,8 @@
 
     <div class="maincont-add">
         <div class="container">
-            <form class="form" id="Search" action="" method="">
+            <form class="form" id="Search" action="/request" method="post">
+            <input type="hidden" name="csrf_token" value="{{.CSRFToken}}">
                 <h2 class="form__title">Request</h2>
                 <!--<div class="form__message form__message--error"></div>-->
                 

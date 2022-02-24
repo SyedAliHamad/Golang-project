@@ -57,4 +57,6 @@ type Req_course struct{
 	Email string
 	University_name string
 	Course string
+	Department string
+
 }

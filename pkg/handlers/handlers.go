@@ -157,7 +157,6 @@ func (m* Repository)PostSignup(w http.ResponseWriter, r *http.Request){
 		Created : time.Now(),
 		Status :false,
 		Hash :"not set rn",
-		//Dropuni: dropuniversities,
 
 	}
 
@@ -177,7 +176,7 @@ func (m* Repository)PostSignup(w http.ResponseWriter, r *http.Request){
 			Data: data,
 			Dropuni: dropuniversities,
 		})
-
+		
 		return
 	} 
 	
@@ -188,8 +187,9 @@ func (m* Repository)PostSignup(w http.ResponseWriter, r *http.Request){
 }
 
 
-
 func (m* Repository)View(w http.ResponseWriter, r *http.Request){
+
+	m.filldata(&w)
 
 	render.Template(w,r,"view.page.tmpl",&Models.TemplateData{
 		Dropuni: dropuniversities,
@@ -275,8 +275,46 @@ func (m *Repository)PostContact(w http.ResponseWriter, r*http.Request){
 
 }
 
-func (m* Repository)Request(w http.ResponseWriter, r *http.Request){
+func (m* Repository)Request(w http.ResponseWriter,r *http.Request){
+
+	var emptyrequest Models.Req_course
+	data:=make(map[string]interface{})
+	data["requestform"]=emptyrequest
 
 	render.Template(w,r,"request.page.tmpl",&Models.TemplateData{
+		Form: forms.New(nil),
 	})
+}
+
+func (m* Repository)PostRequest(w http.ResponseWriter, r *http.Request){
+
+	err := r.ParseForm()
+	if err!=nil{
+		helpers.ServerError(w,err)
+		return
+	}
+
+		request:=Models.Req_course{
+			University_name: r.Form.Get("University"),
+			Course: r.Form.Get("Course"),
+			Department: r.Form.Get("Department"),
+		}
+
+		form:=forms.New(r.PostForm)
+		form.Required("University","Course","Department")
+
+		if!form.Valid(){
+			data:=make(map[string]interface{})
+			data["requestform"]=request
+			render.Template(w,r,"request.page.tmpl",&Models.TemplateData{
+				Form :form,
+				Data:data,
+			})
+			return
+		}
+
+		err =m.DB.InsertRequest(request)
+		if err !=nil{
+			helpers.ServerError(w,err)
+		} 
 }

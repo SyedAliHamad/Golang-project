@@ -2,7 +2,6 @@ package dbrepo
 
 import (
 	"context"
-	"fmt"
 	"log"
 	"time"
 
@@ -34,7 +33,7 @@ func(m*postgresDBrepo) Getdepartment() ([]string,error) {
 	if err=rows.Err(); err !=nil{
 		log.Fatal("error scanning rows",err)
 	}
-	fmt.Println("------------------------------")
+
 	return dropdept,err
 
 }
@@ -60,7 +59,6 @@ func (m*postgresDBrepo) GetCourses()([]string,error){
 	if err=rows.Err(); err !=nil{
 		log.Fatal("error scanning rows",err)
 	}
-	fmt.Println("------------------------------")
 	return dropcourse,err
 }
 
@@ -87,7 +85,7 @@ func (m*postgresDBrepo) Getuniversities() ([]string,error){
 	if err=rows.Err(); err !=nil{
 		log.Fatal("error scanning rows",err)
 	}
-	fmt.Println("------------------------------")
+
 	return dropuni,err
 
 }
@@ -141,4 +139,24 @@ func (m *postgresDBrepo) InsertContact(reg Models.Contact)error{
 	return nil
 
 
+}
+func (m *postgresDBrepo) InsertRequest(req Models.Req_course)error{
+	ctx,cancel:=context.WithTimeout(context.Background(),10*time.Minute)
+	defer cancel()
+
+	stmt := `insert into 
+	Req_course(University_name,course,department) 
+	values($1,$2,$3);
+	`
+
+	_,err:= m.DB.ExecContext(ctx,stmt,
+		req.University_name,
+		req.Course,
+		req.Department,
+	)
+
+	if err!=nil{
+		return err
+	}
+	return nil
 }
