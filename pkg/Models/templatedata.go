@@ -16,4 +16,5 @@ type TemplateData struct{
 	Dropuni []string
 	DropCourse []string
 	DropDept []string
+	IsAuthenticated int
 }

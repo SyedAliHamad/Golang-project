@@ -6,6 +6,7 @@ import (
 
 	"github.com/SyedAliHamad/internproject/helpers"
 	"github.com/justinas/nosurf"
+	"tawesoft.co.uk/go/dialog"
 )
 
 //Nosurf: adds CSRF protection to all POST requests
@@ -30,6 +31,7 @@ func Auth(next http.Handler)http.Handler{
 		if !helpers.IsAuthenticated(r){
 			session.Put(r.Context(),"error","Log in first")
 			http.Redirect(w,r,"/login",http.StatusSeeOther)
+			dialog.Alert("Log in first")
 			return
 		}
 	next.ServeHTTP(w,r)

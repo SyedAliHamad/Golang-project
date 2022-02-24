@@ -45,6 +45,7 @@ func run() (*driver.DB,error){
 	//change this to true when in production=> state for cookie
 	app.InProduction=false
 
+	//os.stdout standardout
 	infoLog =log.New(os.Stdout,"INFO \t",log.Ldate|log.Ltime)
 	app.InfoLog=infoLog
 

@@ -48,6 +48,16 @@ func (m* Repository)Home(w http.ResponseWriter, r* http.Request){
 	render.Template(w,r,"home.page.tmpl",&Models.TemplateData{})
 }
 
+
+//logs our user out
+func (m*Repository)Logout(w http.ResponseWriter,r *http.Request){
+	_ =m.App.Session.Destroy(r.Context())
+	_= m.App.Session.RenewToken(r.Context())
+
+	http.Redirect(w,r,"/login",http.StatusSeeOther)
+}
+
+
 //Login: is the About page handler
 func (m* Repository)Login(w http.ResponseWriter, r *http.Request){
 
@@ -96,12 +106,12 @@ func (m* Repository)PostLogin(w http.ResponseWriter, r *http.Request){
 	if err!=nil{
 		log.Println(err)
 		m.App.Session.Put(r.Context(),"error","Invalid login credentials")
-		http.Redirect(w,r,"/login",http.StatusSeeOther)
+		http.Redirect(w,r,"/home",http.StatusSeeOther)
 		return
 	}
 	m.App.Session.Put(r.Context(),"user_id",id)
 	m.App.Session.Put(r.Context(),"flash","Logged in successfully")
-	http.Redirect(w,r,"/view",http.StatusSeeOther)
+	http.Redirect(w,r,"/",http.StatusSeeOther)
 
 }
 var dropuniversities[]string

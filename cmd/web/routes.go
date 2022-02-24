@@ -22,20 +22,32 @@ func routes(app *config.AppConfig)http.Handler{
 	mux.Get("/login",handlers.Repo.Login)
 	mux.Post("/login",handlers.Repo.PostLogin)
 
+	mux.Get("/logout",handlers.Repo.Logout)
+
 	mux.Get("/signup",handlers.Repo.Signup)
 	mux.Post("/signup",handlers.Repo.PostSignup)
 
 	mux.Get("/contact",handlers.Repo.Contact)
 	mux.Post("/contact",handlers.Repo.PostContact)
 
-	mux.Get("/view",handlers.Repo.View)
-	mux.Post("/view",handlers.Repo.PostView)
+	mux.Route("/upload",func(mux chi.Router){
+		mux.Use(Auth)
+		mux.Get("/",handlers.Repo.Upload)
+		mux.Post("/",handlers.Repo.PostUpload)
+	})
 
-	mux.Get("/upload",handlers.Repo.Upload)
-	mux.Post("/upload",handlers.Repo.PostUpload)
 
-	mux.Get("/request",handlers.Repo.Request)
-	mux.Post("/request",handlers.Repo.PostRequest)
+	mux.Route("/request",func(mux chi.Router){
+		mux.Use(Auth)
+		mux.Get("/",handlers.Repo.Request)
+		mux.Post("/",handlers.Repo.PostRequest)
+	})
+
+	mux.Route("/view",func(mux chi.Router){
+		mux.Use(Auth)
+		mux.Get("/",handlers.Repo.View)
+		mux.Post("/",handlers.Repo.PostView)
+	})
 
 	fileServer:= http.FileServer(http.Dir("./static/"))
 	mux.Handle("/static/*", http.StripPrefix("/static",fileServer))
