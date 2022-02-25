@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"log"
 	"net/http"
-	"os"
 	"time"
 
 	"github.com/SyedAliHamad/internproject/helpers"
@@ -18,9 +17,7 @@ import (
 const portNumber=": 8080"
 var app config.AppConfig
 var session *scs.SessionManager
-var infoLog *log.Logger
-var errorLog *log.Logger
-
+ 
 func main(){
 
 	db,err:=run()
@@ -46,12 +43,12 @@ func run() (*driver.DB,error){
 	app.InProduction=false
 
 	//os.stdout standardout
-	infoLog =log.New(os.Stdout,"INFO \t",log.Ldate|log.Ltime)
-	app.InfoLog=infoLog
+	//infoLog =log.New(os.Stdout,"INFO \t",log.Ldate|log.Ltime)
+	//app.InfoLog=infoLog
 
 
-	errorLog=log.New(os.Stdout,"ERROR \t",log.Ldate|log.Ltime|log.Lshortfile)
-	app.ErrorLog=errorLog
+	//errorLog=log.New(os.Stdout,"ERROR \t",log.Ldate|log.Ltime|log.Lshortfile)
+	//app.ErrorLog=errorLog
 
 
 
@@ -78,15 +75,23 @@ func run() (*driver.DB,error){
 		return nil,err
 	}
 
+	//creates a map of names and corresponding templates at the 
+	//start saves it in app so accessible everywhere
 	app.TemplateCache=tc
+
+	//set equals true when done developing
 	app.UseCache=false
 
+	//Assigns values to package wide application config and db
 	repo:=handlers.NewRepo(&app,db) 
 	//we have application config avaliable to handlers along 
 	//with db which is a pointer to a driver which can only 
 	//handle postgres but can be changed to any driver with a new function
 
 	handlers.NewHandlers(repo)
+
+	//takes pointer to app.template cache to use 
+	//it in their packages
 	render.NewRenderer(&app)
 	helpers.NewHelpers(&app)
 

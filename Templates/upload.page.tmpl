@@ -1,9 +1,60 @@
 {{template "base" .}}
 {{define "content"}}
 
-<form action="upload.php" method="post" enctype="multipart/form-data">
-  Select image to upload:
-  <input type="file" name="fileToUpload" id="fileToUpload">
-  <input type="submit" value="Upload Image" name="submit">
-</form>
+
+  <div class="maincont-search">
+    <div class="container">
+      <form id="form" enctype="multipart/form-data" action="/upload" method="POST">
+        <input type="hidden" name="csrf_token" value="{{.CSRFToken}}">
+        <h1 class="form__title">Upload</h1>
+        
+        
+
+        <div class="form__input-group"> 
+          <div class="form__input">
+            <label >University</label>
+            <select class="form-control select" name="search_university">
+            <option>Select</option> 
+            {{range .Dropuni}}<option>{{.}}</option>{{end}} 
+              </select>
+            <div class="form__input-error-message"></div>
+          </div>
+          </div>
+
+            <div class="form__input-group"> 
+              <div class="form__input">
+                <label >Course</label>
+                <select class="form-control select" name="search_Course">
+                <option>Select</option> 
+                {{range .DropCourse}}<option>{{.}}</option>{{end}} 
+                  </select>
+            <div class="form__input-error-message"></div>
+        </div>
+        </div>
+
+
+
+                <div class="form__input-group"> 
+                    <div class="form__input">
+                        <label >Department</label>
+                        <select class="form-control select" name="search_department">
+                            <option>Select</option> 
+                            {{range .DropDept}}<option>{{.}}</option>{{end}} 
+                        </select>
+                    <div class="form__input-error-message"></div>
+                </div>
+              </div>
+
+                <div class="form__input-group"> 
+                    <div class="form__input">
+                      <input class="input file-input" type="file" name="file" multiple />
+                    </div>
+                </div>
+
+      <button class="form__button" type="submit">Continue</button>
+  
+    </form>
+    </div>
+    </div>
+  </body>
 {{end}}

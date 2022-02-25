@@ -46,7 +46,7 @@ func routes(app *config.AppConfig)http.Handler{
 	mux.Route("/view",func(mux chi.Router){
 		mux.Use(Auth)
 		mux.Get("/",handlers.Repo.View)
-		mux.Post("/",handlers.Repo.PostView)
+		//mux.Post("/",handlers.Repo.PostView)
 	})
 
 	fileServer:= http.FileServer(http.Dir("./static/"))

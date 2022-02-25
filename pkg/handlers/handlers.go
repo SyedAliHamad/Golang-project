@@ -1,10 +1,13 @@
 package handlers
 
 import (
+	"fmt"
+	"io"
 	"log"
+	"os"
+	"path/filepath"
 	"time"
 
-	"github.com/SyedAliHamad/internproject/helpers"
 	"github.com/SyedAliHamad/internproject/internal/driver"
 	"github.com/SyedAliHamad/internproject/internal/forms"
 	"github.com/SyedAliHamad/internproject/internal/repository"
@@ -12,13 +15,10 @@ import (
 	"github.com/SyedAliHamad/internproject/pkg/Models"
 	"github.com/SyedAliHamad/internproject/pkg/config"
 	"github.com/SyedAliHamad/internproject/pkg/render"
+	"tawesoft.co.uk/go/dialog"
 
 	"net/http"
 )
-
-//Repo: The repository used by the handlers
-var Repo *Repository
-
 
 //Repository: creates a new repository
 type Repository struct{
@@ -27,7 +27,13 @@ type Repository struct{
 }
 
 
-//NewRepo: creates a new repository
+
+//Repo: The repository used by the handlers
+var Repo *Repository
+
+
+//NewRepo: creates a new repository and assigns values to
+//repository structure
 func NewRepo(a *config.AppConfig, db *driver.DB) *Repository{
 	return &Repository{
 		App:a,
@@ -46,6 +52,7 @@ func NewHandlers(r *Repository){
 func (m* Repository)Home(w http.ResponseWriter, r* http.Request){
 
 	render.Template(w,r,"home.page.tmpl",&Models.TemplateData{})
+	
 }
 
 
@@ -76,7 +83,7 @@ func (m* Repository)PostLogin(w http.ResponseWriter, r *http.Request){
 
 	err := r.ParseForm()
 	if err!=nil{
-		helpers.ServerError(w,err)
+		log.Println("error pasing login form")
 		return
 	}
 
@@ -110,8 +117,8 @@ func (m* Repository)PostLogin(w http.ResponseWriter, r *http.Request){
 		return
 	}
 	m.App.Session.Put(r.Context(),"user_id",id)
-	m.App.Session.Put(r.Context(),"flash","Logged in successfully")
 	http.Redirect(w,r,"/",http.StatusSeeOther)
+	dialog.Alert("Successfully Logged in")
 
 }
 var dropuniversities[]string
@@ -121,20 +128,20 @@ var dropdept[]string
 func (m* Repository)filldata(w *http.ResponseWriter){
 	dropuni,err :=m.DB.Getuniversities()
 	if err !=nil{
-		helpers.ServerError(*w,err)
+		log.Println("error getting university data")
 	} 
 	
 	dropuniversities=dropuni	
 
 	dropc,err:=m.DB.GetCourses()
 	if err !=nil{
-		helpers.ServerError(*w,err)
+		log.Println("error getting course data")
 	} 
 	dropcourse=dropc
 
 	dropd,err:=m.DB.Getdepartment()
 	if err !=nil{
-		helpers.ServerError(*w,err)
+		log.Println("error getting department data")
 	} 
 	dropdept=dropd
 }
@@ -161,7 +168,8 @@ func (m* Repository)PostSignup(w http.ResponseWriter, r *http.Request){
 
 	err := r.ParseForm()
 	if err!=nil{
-		helpers.ServerError(w,err)
+
+		log.Println("error parsing signup form")
 		return
 	}
 	
@@ -199,7 +207,7 @@ func (m* Repository)PostSignup(w http.ResponseWriter, r *http.Request){
 	
 	err =m.DB.InsertStudentinfo(signup)
 	if err !=nil{
-		helpers.ServerError(w,err)
+		log.Println("Error inserting students info")
 	} 
 }
 
@@ -216,28 +224,50 @@ func (m* Repository)View(w http.ResponseWriter, r *http.Request){
 }
 func (m* Repository)Upload(w http.ResponseWriter, r *http.Request){
 
+	m.filldata(&w)
 	render.Template(w,r,"upload.page.tmpl",&Models.TemplateData{
+		Dropuni: dropuniversities,
+		DropCourse: dropcourse,
+		DropDept: dropdept,
 	})
 }
 
 func (m* Repository)PostUpload(w http.ResponseWriter, r *http.Request){
 
-	render.Template(w,r,"upload.page.tmpl",&Models.TemplateData{
-	})
-}
+	// The argument to FormFile must match the name attribute
+	// of the file input on the frontend
+	file, fileHeader, err := r.FormFile("file")
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
 
+	defer file.Close()
+// Create the uploads folder if it doesn't
+	// already exist
+	err = os.MkdirAll("./uploads", os.ModePerm)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
 
-func (m* Repository)PostView(w http.ResponseWriter, r *http.Request){
-	/*
-	loginname :=r.Form.Get("login_name")
-	loginpasswod:=r.Form.Get("login_password")
+	// Create a new file in the uploads directory
+	dst, err := os.Create(fmt.Sprintf("./uploads/%d%s", time.Now().UnixNano(), filepath.Ext(fileHeader.Filename)))
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
 
-	signupname:= r.Form.Get("signup_name")
-	signupemail:=r.Form.Get("signup_email")
-	signuppassword:=r.Form.Get("signup_password")
+	defer dst.Close()
 
-	w.Write([]byte(fmt.Sprintf("login name: %s      password is: %s       signup name is: %s        signup password : %s         signup password : %s",loginname,loginpasswod,signupname,signupemail,signuppassword)))
-*/
+	// Copy the uploaded file to the filesystem
+	// at the specified destination
+	_, err = io.Copy(dst, file)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+	dialog.Alert("File submitted")
 }
 
 func (m* Repository)Contact(w http.ResponseWriter, r *http.Request){
@@ -255,7 +285,7 @@ func (m *Repository)PostContact(w http.ResponseWriter, r*http.Request){
 
 	err := r.ParseForm()
 	if err!=nil{
-		helpers.ServerError(w,err)
+		log.Println("error pasing the contact form")
 		return
 	}
 
@@ -287,7 +317,7 @@ func (m *Repository)PostContact(w http.ResponseWriter, r*http.Request){
 
 	err =m.DB.InsertContact(contact)
 	if err !=nil{
-		helpers.ServerError(w,err)
+		log.Println("error inserting contact information")
 	} 
 
 }
@@ -307,7 +337,7 @@ func (m* Repository)PostRequest(w http.ResponseWriter, r *http.Request){
 
 	err := r.ParseForm()
 	if err!=nil{
-		helpers.ServerError(w,err)
+		log.Println("error parsing request form")
 		return
 	}
 
@@ -332,6 +362,9 @@ func (m* Repository)PostRequest(w http.ResponseWriter, r *http.Request){
 
 		err =m.DB.InsertRequest(request)
 		if err !=nil{
-			helpers.ServerError(w,err)
+			log.Println("error inserting request information")
 		} 
 }
+
+//we can send data from handers to
+//goline templates
