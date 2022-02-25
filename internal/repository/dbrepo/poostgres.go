@@ -103,11 +103,12 @@ func (m *postgresDBrepo) InsertStudentinfo(reg Models.Student_info) error{
 	values
 	($1,$2,$3,$4,$5,$6,$7);`
 
+	x,_:=bcrypt.GenerateFromPassword([]byte(reg.Password),12)
 	_,err:= m.DB.ExecContext(ctx,stmt,
 		reg.Username,
 		reg.Email,
 		reg.University,
-		reg.Password,
+		string(x),
 		time.Now(),
 		reg.Status,
 		reg.Hash,

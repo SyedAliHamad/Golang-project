@@ -113,7 +113,8 @@ func (m* Repository)PostLogin(w http.ResponseWriter, r *http.Request){
 	if err!=nil{
 		log.Println(err)
 		m.App.Session.Put(r.Context(),"error","Invalid login credentials")
-		http.Redirect(w,r,"/home",http.StatusSeeOther)
+		http.Redirect(w,r,"/login",http.StatusSeeOther)
+		dialog.Alert("Login failed")
 		return
 	}
 	m.App.Session.Put(r.Context(),"user_id",id)
@@ -208,7 +209,11 @@ func (m* Repository)PostSignup(w http.ResponseWriter, r *http.Request){
 	err =m.DB.InsertStudentinfo(signup)
 	if err !=nil{
 		log.Println("Error inserting students info")
-	} 
+	}
+
+	http.Redirect(w,r,"/login",http.StatusSeeOther)
+	dialog.Alert("Successfully Logged in")
+
 }
 
 
@@ -267,6 +272,7 @@ func (m* Repository)PostUpload(w http.ResponseWriter, r *http.Request){
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
+	http.Redirect(w,r,"/view",http.StatusSeeOther)
 	dialog.Alert("File submitted")
 }
 
@@ -320,6 +326,9 @@ func (m *Repository)PostContact(w http.ResponseWriter, r*http.Request){
 		log.Println("error inserting contact information")
 	} 
 
+	http.Redirect(w,r,"/",http.StatusSeeOther)
+	dialog.Alert("Message submitted")
+
 }
 
 func (m* Repository)Request(w http.ResponseWriter,r *http.Request){
@@ -363,7 +372,10 @@ func (m* Repository)PostRequest(w http.ResponseWriter, r *http.Request){
 		err =m.DB.InsertRequest(request)
 		if err !=nil{
 			log.Println("error inserting request information")
-		} 
+		}
+
+		http.Redirect(w,r,"/view",http.StatusSeeOther)
+		dialog.Alert("Request Successfully saved")
 }
 
 //we can send data from handers to
