@@ -37,3 +37,16 @@ func Auth(next http.Handler)http.Handler{
 	next.ServeHTTP(w,r)
 	})
 }
+
+func AuthLogin(next http.Handler) http.Handler{
+
+	return http.HandlerFunc(func(w http.ResponseWriter,r *http.Request){
+		if helpers.IsAuthenticated(r){
+			session.Put(r.Context(),"error","You need to Log out first")
+			http.Redirect(w,r,"/",http.StatusSeeOther)
+			dialog.Alert("Log out first")
+			return
+		}
+	next.ServeHTTP(w,r)
+	})
+}

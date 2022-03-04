@@ -19,13 +19,19 @@ func routes(app *config.AppConfig)http.Handler{
 
 	mux.Get("/",handlers.Repo.Home)
 
-	mux.Get("/login",handlers.Repo.Login)
-	mux.Post("/login",handlers.Repo.PostLogin)
+	mux.Route("/login",func(mux chi.Router){
+		mux.Use(AuthLogin)
+		mux.Get("/",handlers.Repo.Login)
+		mux.Post("/",handlers.Repo.PostLogin)
+	})
 
 	mux.Get("/logout",handlers.Repo.Logout)
 
-	mux.Get("/signup",handlers.Repo.Signup)
-	mux.Post("/signup",handlers.Repo.PostSignup)
+	mux.Route("/signup",func(mux chi.Router){
+		mux.Use(AuthLogin)
+		mux.Get("/",handlers.Repo.Signup)
+		mux.Post("/",handlers.Repo.PostSignup)
+	})	
 
 	mux.Get("/contact",handlers.Repo.Contact)
 	mux.Post("/contact",handlers.Repo.PostContact)

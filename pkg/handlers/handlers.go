@@ -20,20 +20,18 @@ import (
 	"net/http"
 )
 
-//Repository: creates a new repository
+// Repository: creates a new repository
 type Repository struct{
 	App *config.AppConfig
 	DB repository.DatabaseRepo
 }
 
 
-
-//Repo: The repository used by the handlers
+// Repo: The repository used by the handlers
 var Repo *Repository
 
-
-//NewRepo: creates a new repository and assigns values to
-//repository structure
+// NewRepo: creates a new repository and assigns values to
+// Repository structure
 func NewRepo(a *config.AppConfig, db *driver.DB) *Repository{
 	return &Repository{
 		App:a,
@@ -41,22 +39,19 @@ func NewRepo(a *config.AppConfig, db *driver.DB) *Repository{
 	}
 }
 
-
-//NewHandlers: sets the repository for the handlers
+// NewHandlers: sets the repository for the handlers
 func NewHandlers(r *Repository){
 	Repo=r
 }
 
-
-//Home: is the home page handler
+// Home: is the home page handler
 func (m* Repository)Home(w http.ResponseWriter, r* http.Request){
 
 	render.Template(w,r,"home.page.tmpl",&Models.TemplateData{})
 	
 }
 
-
-//logs our user out
+// logs our user out
 func (m*Repository)Logout(w http.ResponseWriter,r *http.Request){
 	_ =m.App.Session.Destroy(r.Context())
 	_= m.App.Session.RenewToken(r.Context())
@@ -64,21 +59,15 @@ func (m*Repository)Logout(w http.ResponseWriter,r *http.Request){
 	http.Redirect(w,r,"/login",http.StatusSeeOther)
 }
 
-
-//Login: is the About page handler
+// Login: is the About page handler
 func (m* Repository)Login(w http.ResponseWriter, r *http.Request){
-
-
 	render.Template(w,r,"login.page.tmpl",&Models.TemplateData{
 		Form: forms.New(nil),
 	})
 }
 
-
-
-//PostLogin: Handles the postin of the form
+// PostLogin: Handles the postin of the form
 func (m* Repository)PostLogin(w http.ResponseWriter, r *http.Request){
-
 	_=m.App.Session.RenewToken(r.Context())
 
 	err := r.ParseForm()
@@ -93,9 +82,7 @@ func (m* Repository)PostLogin(w http.ResponseWriter, r *http.Request){
 		LoginPassword: r.Form.Get("login_password"),
 	}
 
-
 	form :=forms.New(r.PostForm)
-
 	form.Required("login_email","login_password")
 	form.Minlength("login_password",8,r)
 	form.IsEmail("login_email")
@@ -202,7 +189,6 @@ func (m* Repository)PostSignup(w http.ResponseWriter, r *http.Request){
 			Data: data,
 			Dropuni: dropuniversities,
 		})
-		
 		return
 	} 
 	
@@ -230,7 +216,14 @@ func (m* Repository)View(w http.ResponseWriter, r *http.Request){
 func (m* Repository)Upload(w http.ResponseWriter, r *http.Request){
 
 	m.filldata(&w)
+	emptyupload:=Models.Upload{
+	}
+
+	data:= make(map[string]interface{})
+	data["uploadform"] = emptyupload
+
 	render.Template(w,r,"upload.page.tmpl",&Models.TemplateData{
+		Form: forms.New(nil),
 		Dropuni: dropuniversities,
 		DropCourse: dropcourse,
 		DropDept: dropdept,
@@ -238,6 +231,34 @@ func (m* Repository)Upload(w http.ResponseWriter, r *http.Request){
 }
 
 func (m* Repository)PostUpload(w http.ResponseWriter, r *http.Request){
+
+	err := r.ParseForm()
+	if err!=nil{
+		log.Println("error parsing the upload form")
+		return
+	}
+
+	contact:=Models.Upload{
+		Department:r.Form.Get("department"),
+		University: r.Form.Get("university"),
+		Course:r.Form.Get("Course"),
+	}
+
+	form:=forms.New(r.PostForm)
+	form.Required("university","department","Course")
+
+	if!form.Valid(){
+		data:=make(map[string]interface{})
+		data["uploadform"]=contact
+		render.Template(w,r,"upload.page.tmpl",&Models.TemplateData{
+			Form :form,
+			Dropuni: dropuniversities,
+			DropCourse: dropcourse,
+			DropDept: dropdept,
+		})
+		return
+	}
+
 
 	// The argument to FormFile must match the name attribute
 	// of the file input on the frontend
@@ -248,8 +269,7 @@ func (m* Repository)PostUpload(w http.ResponseWriter, r *http.Request){
 	}
 
 	defer file.Close()
-// Create the uploads folder if it doesn't
-	// already exist
+// Create the uploads folder if it doesn't already exist
 	err = os.MkdirAll("./uploads", os.ModePerm)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -291,7 +311,7 @@ func (m *Repository)PostContact(w http.ResponseWriter, r*http.Request){
 
 	err := r.ParseForm()
 	if err!=nil{
-		log.Println("error pasing the contact form")
+		log.Println("error parsing the contact form")
 		return
 	}
 

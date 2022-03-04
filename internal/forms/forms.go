@@ -34,6 +34,8 @@ func (f *Form)Required(fields ...string){
 		value :=f.Get(field)
 		if strings.TrimSpace(value)==""{
 			f.Errors.Add(field,"This field can not be blank")
+		}else if strings.TrimSpace(value)=="select"{
+			f.Errors.Add(field,"This field can not be blank")
 		}
 	}
 }

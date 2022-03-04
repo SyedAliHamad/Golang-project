@@ -15,7 +15,7 @@
             <div class="form__input-group">
 
               {{with .Form.Errors.Get "login_email"}}
-              <label class="text-danger">{{.}}</label>
+              <label class="label-input100"style="color:red">{{.}}</label>
               {{end}}
 
               <input type="text" value="{{$log.LoginEmail}}" class="form__input" autofocus placeholder="email" name="login_email">
@@ -25,7 +25,7 @@
             <div class="form__input-group">
 
               {{with .Form.Errors.Get "login_password"}}
-              <label class="text-danger">{{.}}</label>
+              <label class="label-input100"style="color:red">{{.}}</label>
               {{end}}
 
               <input type="password" class="form__input" value="{{$log.LoginPassword}}" autofocus placeholder="Password" name="login_password">

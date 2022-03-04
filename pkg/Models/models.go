@@ -43,6 +43,13 @@ type Contact struct{
 	Message string
 }
 
+type Upload struct{
+	Userid int
+	University string
+	Department string
+	Course string
+
+}
 //admin is the admin table from the database
 type Admin struct{
 	Username string
