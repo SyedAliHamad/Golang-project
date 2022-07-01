@@ -1,4 +1,6 @@
-#WebApp for Viewing University Exams
+# WebApp for Viewing University Exams
+
+## This project is for my own practise and isn't completed yet.
 
 This is the repository for University Exams Viewing Project
 
