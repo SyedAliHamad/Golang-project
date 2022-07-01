@@ -47,16 +47,12 @@
                 <button class="form__button" type="submit">Continue</button>
 
             </form>
-        
-                <canvas id="my_canvas"></canvas>
-                
-                <embed src="/../uploads/test.pdf" width=800 height=500 type='application/pdf'/>
+    
         </div>
     </div>
 
     <script>
-        pdfjsLib.getDocument('./test.pdf').then(doc=>{
-        console.log("This file has "+doc._pdfInfo.numPages + " pages");
+        
     });
     </script>
 {{end}}

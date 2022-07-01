@@ -113,6 +113,7 @@ var dropuniversities[]string
 var dropcourse[]string
 var dropdept[]string
 
+// filldata: fills dropdown info from database into string slices
 func (m* Repository)filldata(w *http.ResponseWriter){
 	dropuni,err :=m.DB.Getuniversities()
 	if err !=nil{
@@ -134,6 +135,7 @@ func (m* Repository)filldata(w *http.ResponseWriter){
 	dropdept=dropd
 }
 
+//Signup: Displays an empty SIgnup form
 func (m* Repository)Signup(w http.ResponseWriter, r *http.Request){
 
 	m.filldata(&w)
@@ -152,6 +154,7 @@ func (m* Repository)Signup(w http.ResponseWriter, r *http.Request){
 	
 }
 
+// PostSignup: Takes Signupinfo and adds it into registed users database
 func (m* Repository)PostSignup(w http.ResponseWriter, r *http.Request){
 
 	err := r.ParseForm()
@@ -202,7 +205,7 @@ func (m* Repository)PostSignup(w http.ResponseWriter, r *http.Request){
 
 }
 
-
+// View: Displays an empty view form
 func (m* Repository)View(w http.ResponseWriter, r *http.Request){
 
 	m.filldata(&w)
@@ -212,9 +215,59 @@ func (m* Repository)View(w http.ResponseWriter, r *http.Request){
 		DropCourse: dropcourse,
 		DropDept: dropdept,
 	})
-}
-func (m* Repository)Upload(w http.ResponseWriter, r *http.Request){
 
+	filename    := "./cni"
+		 // Open file
+		 f, err := os.Open(filename)
+		 if err != nil {
+			 fmt.Println(err)
+			 w.WriteHeader(500)
+			 return
+		 }
+		 defer f.Close()
+	 
+		 //Set header
+		 w.Header().Set("Content-type", "application/pdf")
+	 
+		 //Stream to response
+		 if _, err := io.Copy(w, f); err != nil {
+			 fmt.Println(err)
+			 w.WriteHeader(500)
+		 }
+	
+}
+
+func (m* Repository)PostView(w http.ResponseWriter,r *http.Request){
+	err := r.ParseForm()
+	if err!=nil{
+		log.Println("error parsing the upload form")
+		return
+	}
+	upload:=Models.Upload{
+		Department:r.Form.Get("department"),
+		University: r.Form.Get("university"),
+		Course:r.Form.Get("Course"),
+	}
+
+	form:=forms.New(r.PostForm)
+	form.Required("university","department","Course")
+
+	if!form.Valid(){
+		data:=make(map[string]interface{})
+		data["uploadform"]=upload
+		render.Template(w,r,"upload.page.tmpl",&Models.TemplateData{
+			Form :form,
+			Dropuni: dropuniversities,
+			DropCourse: dropcourse,
+			DropDept: dropdept,
+		})
+		return
+	}
+
+}
+
+// Upload: Displays an empty upload form
+func (m* Repository)Upload(w http.ResponseWriter, r *http.Request){
 	m.filldata(&w)
 	emptyupload:=Models.Upload{
 	}
@@ -230,15 +283,14 @@ func (m* Repository)Upload(w http.ResponseWriter, r *http.Request){
 	})
 }
 
+//PostUpload: parses form, creates folders and saves the file inside correct folder 
 func (m* Repository)PostUpload(w http.ResponseWriter, r *http.Request){
-
 	err := r.ParseForm()
 	if err!=nil{
 		log.Println("error parsing the upload form")
 		return
 	}
-
-	contact:=Models.Upload{
+	upload:=Models.Upload{
 		Department:r.Form.Get("department"),
 		University: r.Form.Get("university"),
 		Course:r.Form.Get("Course"),
@@ -249,7 +301,7 @@ func (m* Repository)PostUpload(w http.ResponseWriter, r *http.Request){
 
 	if!form.Valid(){
 		data:=make(map[string]interface{})
-		data["uploadform"]=contact
+		data["uploadform"]=upload
 		render.Template(w,r,"upload.page.tmpl",&Models.TemplateData{
 			Form :form,
 			Dropuni: dropuniversities,
@@ -258,8 +310,6 @@ func (m* Repository)PostUpload(w http.ResponseWriter, r *http.Request){
 		})
 		return
 	}
-
-
 	// The argument to FormFile must match the name attribute
 	// of the file input on the frontend
 	file, fileHeader, err := r.FormFile("file")
@@ -267,22 +317,21 @@ func (m* Repository)PostUpload(w http.ResponseWriter, r *http.Request){
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
-
 	defer file.Close()
-// Create the uploads folder if it doesn't already exist
-	err = os.MkdirAll("./uploads", os.ModePerm)
+
+	// Create the uploads folder if it doesn't already exist
+	err = os.MkdirAll("Exams"+upload.University+"/"+upload.Department+"/"+upload.Course+"/", os.ModePerm)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 
 	// Create a new file in the uploads directory
-	dst, err := os.Create(fmt.Sprintf("./uploads/%d%s", time.Now().UnixNano(), filepath.Ext(fileHeader.Filename)))
+	dst, err := os.Create(fmt.Sprintf("Exams"+upload.University+"/"+upload.Department+"/"+upload.Course+"/", time.Now().UnixNano(), filepath.Ext(fileHeader.Filename)))
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-
 	defer dst.Close()
 
 	// Copy the uploaded file to the filesystem
@@ -295,7 +344,7 @@ func (m* Repository)PostUpload(w http.ResponseWriter, r *http.Request){
 	http.Redirect(w,r,"/view",http.StatusSeeOther)
 	dialog.Alert("File submitted")
 }
-
+// Contact: Diaplays an empty contact form
 func (m* Repository)Contact(w http.ResponseWriter, r *http.Request){
 
 	var emptycontact Models.Contact
@@ -307,6 +356,7 @@ func (m* Repository)Contact(w http.ResponseWriter, r *http.Request){
 	})
 }
 
+// PostContact: Parses contact form and saves it in database
 func (m *Repository)PostContact(w http.ResponseWriter, r*http.Request){
 
 	err := r.ParseForm()
@@ -321,9 +371,6 @@ func (m *Repository)PostContact(w http.ResponseWriter, r*http.Request){
 		University: r.Form.Get("University"),
 		Message:r.Form.Get("Message"),
 	}
-
-	log.Println(contact.Email,contact.Username,contact.Message)
-
 
 	form:=forms.New(r.PostForm)
 	form.Required("name","Message","Email","University")
@@ -345,12 +392,11 @@ func (m *Repository)PostContact(w http.ResponseWriter, r*http.Request){
 	if err !=nil{
 		log.Println("error inserting contact information")
 	} 
-
 	http.Redirect(w,r,"/",http.StatusSeeOther)
 	dialog.Alert("Message submitted")
-
 }
 
+// Request: displays an empty request form
 func (m* Repository)Request(w http.ResponseWriter,r *http.Request){
 
 	var emptyrequest Models.Req_course
@@ -362,6 +408,7 @@ func (m* Repository)Request(w http.ResponseWriter,r *http.Request){
 	})
 }
 
+// PostsRequest: parses request form and saves it in database
 func (m* Repository)PostRequest(w http.ResponseWriter, r *http.Request){
 
 	err := r.ParseForm()
